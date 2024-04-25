@@ -1,21 +1,73 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import { authenticator } from "@/lib/auth.server";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-// First we create our UI with the form doing a POST and the inputs with the
-// names we are going to use in the strategy
 export default function Screen() {
   return (
-    <Form method="post">
-      <input type="email" name="email" required />
-      <input
-        type="password"
-        name="password"
-        autoComplete="current-password"
-        required
-      />
-      <button>Sign In</button>
-    </Form>
+    <Card className="mx-auto max-w-sm mt-16 lg:mt-32">
+      <CardHeader>
+        <CardTitle className="text-2xl font-serif tracking-wide">Sign into your account</CardTitle>
+        <CardDescription>
+          Access all of your services in one place.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form method="post">
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="marcus@example.com"
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <a
+                  href="/forgot"
+                  className="ml-auto inline-block text-sm underline"
+                >
+                  Forgot your password?
+                </a>
+              </div>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+            <Button variant="outline" className="w-full">
+              Login with Google
+            </Button>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <a href="/signup" className="underline">
+              Sign up
+            </a>
+          </div>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -37,6 +89,6 @@ export async function action({ request }: ActionFunctionArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
   // If the user is already authenticated redirect to /dashboard directly
   return await authenticator.isAuthenticated(request, {
-    successRedirect: "/dashboard",
+    successRedirect: "/",
   });
 }
