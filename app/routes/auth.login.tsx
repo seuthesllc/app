@@ -16,7 +16,7 @@ export default function Screen() {
   return (
     <Card className="mx-auto max-w-sm mt-16 lg:mt-32">
       <CardHeader>
-        <CardTitle className="text-2xl font-serif tracking-wide">Sign into your account</CardTitle>
+        <CardTitle className="text-2xl font-serif">Sign into your account</CardTitle>
         <CardDescription>
           Access all of your services in one place.
         </CardDescription>
@@ -48,6 +48,7 @@ export default function Screen() {
                 id="password"
                 name="password"
                 type="password"
+                placeholder="••••••••"
                 autoComplete="current-password"
                 required
               />
@@ -79,7 +80,7 @@ export async function action({ request }: ActionFunctionArgs) {
   // to be redirected to after a success or a failure
   return await authenticator.authenticate("user-pass", request, {
     successRedirect: "/",
-    failureRedirect: "/login",
+    failureRedirect: "/auth/login",
   });
 }
 
