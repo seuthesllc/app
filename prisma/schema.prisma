@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String       @id @default(cuid())
+  email     String       @unique
+  name      String?
+  admin     Boolean      @default(false)
+  companies Membership[]
+}
+
+model Company {
+  id          String       @id @default(cuid())
+  name        String
+  frequencies Json? // To store pentest and access review frequencies, etc.
+  frameworks  Framework[]
+  pentests    Pentest[]
+  memberships Membership[]
+}
+
+model Membership {
+  userId    String
+  companyId String
+  user      User    @relation(fields: [userId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id])
+
+  @@id([userId, companyId])
+}
+
+model Framework {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  companies Company[]
+}
+
+model Pentest {
+  id        String   @id @default(cuid())
+  companyId String
+  date      DateTime
+  report    String?
+  company   Company  @relation(fields: [companyId], references: [id])
+}
