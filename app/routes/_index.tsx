@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import type { MetaFunction } from "@remix-run/node";
+import { json, type MetaFunction } from "@remix-run/node";
+import { authenticator } from "@/lib/auth.server";
+import { useLoaderData } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,9 +11,10 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const data = useLoaderData<typeof loader>();
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
+      <h1>Welcome to {data.user?.name}</h1>
       <Button>Click me</Button>
       <ul>
         <li>
@@ -40,4 +43,12 @@ export default function Index() {
       </ul>
     </div>
   );
+}
+
+export async function loader({request}) {
+  const user = await authenticator.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+
+  return json({user});
 }
