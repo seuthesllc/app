@@ -23,6 +23,7 @@ model Company {
   frameworks  Framework[]
   pentests    Pentest[]
   memberships Membership[]
+  scopes      Scope[]
 }
 
 model Membership {
@@ -40,10 +41,36 @@ model Framework {
   companies Company[]
 }
 
+enum PentestType {
+  WEB_BLACKBOX
+  WEB_GREYBOX
+  WEB_WHITEBOX
+}
+
+enum PentestStatus {
+  REQUESTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 model Pentest {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
+  company   Company       @relation(fields: [companyId], references: [id])
   companyId String
+  type      PentestType   @default(WEB_BLACKBOX)
+  status    PentestStatus @default(REQUESTED)
   date      DateTime
   report    String?
-  company   Company  @relation(fields: [companyId], references: [id])
+  scope     Scope         @relation(fields: [scopeId], references: [id])
+  scopeId   String
+}
+
+model Scope {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  scope     String?
+  company   Company    @relation(fields: [companyId], references: [id])
+  companyId String
+  pentests  Pentest[]
 }
