@@ -26,7 +26,9 @@ export default function Shell({ heading, children }: ShellProps) {
   return (
     <div className="h-screen flex flex-col">
       <header className="sticky top-0 bg-white flex px-8 py-4 border-b">
-        <span className="text-[1.6rem] font-serif text-gold-400">Seuthes</span>
+        <Link to="/" className="text-[1.6rem] font-serif text-gold-400">
+          Seuthes
+        </Link>
         <nav className="ml-8 space-x-6 flex items-center text-sm font-medium">
           {navigation.map((item) => (
             <Link
@@ -70,7 +72,7 @@ export default function Shell({ heading, children }: ShellProps) {
         </div>
       </header>
       <main className="flex-1 overflow-auto p-8 bg-muted/40">
-        <h1 className="font-serif text-3xl mb-4">{heading}</h1>
+        <h1 className="font-serif text-3xl text-gray-700 mb-4">{heading}</h1>
         {children}
       </main>
     </div>
