@@ -19,7 +19,7 @@ model User {
 model Company {
   id          String       @id @default(cuid())
   name        String
-  frequencies Json? // To store pentest and access review frequencies, etc.
+  frequencies Json? @default("{\"pentest\": 12, \"accessReview\": 3}")
   frameworks  Framework[]
   pentests    Pentest[]
   memberships Membership[]

@@ -20,6 +20,7 @@ const navigation = [
   { name: "Frameworks", href: "/frameworks" },
   { name: "Pentests", href: "/pentests" },
   { name: "Scopes", href: "/scopes" },
+  { name: "Settings", href: "/settings" },
 ];
 
 export default function Shell({ heading, children }: ShellProps) {
