@@ -4,7 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 import Shell from "@/components/layout/Shell";
 import prisma from "@/lib/prisma";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Verified } from "lucide-react";
