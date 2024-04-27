@@ -36,9 +36,12 @@ model Membership {
 }
 
 model Framework {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  companies Company[]
+  id         String  @id @default(cuid())
+  name       String  @unique
+  managed    Boolean @default(false)
+  completion Int?
+  company    Company @relation(fields: [companyId], references: [id])
+  companyId  String
 }
 
 enum PentestType {
@@ -70,7 +73,7 @@ model Scope {
   id        String    @id @default(cuid())
   name      String    @unique
   scope     String?
-  company   Company    @relation(fields: [companyId], references: [id])
+  company   Company   @relation(fields: [companyId], references: [id])
   companyId String
   pentests  Pentest[]
 }
