@@ -58,7 +58,7 @@ export default function Index() {
           {data.company?.frameworks.map((framework) => (
             <Card key={framework.id}>
               <CardHeader>
-                <CardTitle className="flex font-serif tracking-normal text-gray-700">
+                <CardTitle className="flex font-serif tracking-normal text-gray-700 dark:text-white">
                   <span>{framework.name}</span>
                   {framework.completion ? (
                     <span className="ml-auto text-muted-foreground">
@@ -88,7 +88,7 @@ export default function Index() {
         <div className="space-y-4">
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="font-serif tracking-normal text-gray-700">
+              <CardTitle className="font-serif tracking-normal text-gray-700 dark:text-white">
                 Pentests
               </CardTitle>
             </CardHeader>
@@ -123,7 +123,7 @@ export default function Index() {
           </Card>
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="font-serif tracking-normal text-gray-700">
+              <CardTitle className="font-serif tracking-normal text-gray-700 dark:text-white">
                 Scopes
               </CardTitle>
             </CardHeader>

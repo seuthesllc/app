@@ -55,7 +55,7 @@ export default function Settings() {
       <Toaster position="bottom-right" />
       <Card>
         <CardHeader>
-          <CardTitle className="text-gray-700 tracking-normal font-serif">
+          <CardTitle className="text-gray-700 tracking-normal font-serif dark:text-white">
             Company
           </CardTitle>
         </CardHeader>
