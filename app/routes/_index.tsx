@@ -5,6 +5,7 @@ import Shell from "@/components/layout/Shell";
 import prisma from "@/lib/prisma";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Verified } from "lucide-react";
+import { AlertCircle, Verified } from "lucide-react";
 import { formatPentestType } from "@/lib/enums";
 import dayjs from "dayjs";
 
@@ -55,36 +56,58 @@ export default function Index() {
     <Shell heading="Dashboard">
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2 flex flex-col gap-4">
-          {data.company?.frameworks.map((framework) => (
-            <Card key={framework.id}>
-              <CardHeader>
-                <CardTitle className="flex font-serif tracking-normal text-gray-700 dark:text-white">
-                  <span>{framework.name}</span>
-                  {framework.completion ? (
-                    <span className="ml-auto text-muted-foreground">
-                      {framework.completion}%
+          {!data.company?.vantaToken && (
+            <Alert variant="destructive" className="bg-white dark:text-red-400 dark:bg-red-100 dark:bg-opacity-10">
+              <AlertCircle className="h-4 w-4 dark:text-red-400" />
+              <AlertTitle>You haven&apos;t set a Vanta token</AlertTitle>
+              <AlertDescription>
+                We can&apos;t display your Vanta data yet, because you haven&apos;t
+                added your Vanta API token.
+              </AlertDescription>
+            </Alert>
+          )}
+          {data.company?.frameworks.length === 0 ? (
+            <Alert>
+              <AlertTitle className="text-2xl font-serif tracking-normal text-gray-700 dark:text-white">
+                No frameworks
+              </AlertTitle>
+              <AlertDescription className="text-muted-foreground">
+                You don&apos;t have any frameworks yet.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            data.company?.frameworks.map((framework) => (
+              <Card key={framework.id}>
+                <CardHeader>
+                  <CardTitle className="flex font-serif tracking-normal text-gray-700 dark:text-white">
+                    <span>{framework.name}</span>
+                    {framework.completion ? (
+                      <span className="ml-auto text-muted-foreground">
+                        {framework.completion}%
+                      </span>
+                    ) : null}
+                  </CardTitle>
+                  {framework.managed ? (
+                    <span className="text-xs text-gold-500 font-medium">
+                      <Verified className="inline-block mr-0.5 -mt-[1px] w-4 h-4" />{" "}
+                      Managed by Seuthes
                     </span>
+                  ) : (
+                    <span className="text-xs text-gray-500 font-medium">
+                      Self-managed
+                    </span>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {framework.completion ? (
+                    <Progress value={framework.completion} className="w-full" />
                   ) : null}
-                </CardTitle>
-                {framework.managed ? (
-                  <span className="text-xs text-gold-500 font-medium">
-                    <Verified className="inline-block mr-0.5 -mt-[1px] w-4 h-4" />{" "}
-                    Managed by Seuthes
-                  </span>
-                ) : (
-                  <span className="text-xs text-gray-500 font-medium">
-                    Self-managed
-                  </span>
-                )}
-              </CardHeader>
-              <CardContent>
-                {framework.completion ? (
-                  <Progress value={framework.completion} className="w-full" />
-                ) : null}
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
+
         <div className="space-y-4">
           <Card>
             <CardHeader className="pb-4">

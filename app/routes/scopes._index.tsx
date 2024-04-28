@@ -10,6 +10,7 @@ import Shell from "@/components/layout/Shell";
 import prisma from "@/lib/prisma";
 import { PlusCircle, Trash } from "lucide-react";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -153,49 +154,60 @@ export default function Scopes() {
         </div>
       </div>
 
-      <Card>
-        <CardContent className="p-2">
-          <Table>
-            <TableHeader style={{ textAlign: "left" }}>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Scope</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.scopes.map((scope) => (
-                <TableRow key={scope.id}>
-                  <TableCell className="font-medium">{scope.name}</TableCell>
-                  <TableCell>{scope.scope}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    {/* <Button size="sm" variant="outline" className="h-8 gap-1">
+      {data.scopes.length === 0 ? (
+        <Alert>
+          <AlertTitle className="text-2xl font-serif tracking-normal text-gray-700 dark:text-white">
+            No scopes
+          </AlertTitle>
+          <AlertDescription className="text-muted-foreground">
+            You don&apos;t have any scopes yet.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <Card>
+          <CardContent className="p-2">
+            <Table>
+              <TableHeader style={{ textAlign: "left" }}>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Scope</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.scopes.map((scope) => (
+                  <TableRow key={scope.id}>
+                    <TableCell className="font-medium">{scope.name}</TableCell>
+                    <TableCell>{scope.scope}</TableCell>
+                    <TableCell className="text-right space-x-2">
+                      {/* <Button size="sm" variant="outline" className="h-8 gap-1">
                       <Pencil className="h-3.5 w-3.5" />
                       <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                         Edit
                       </span>
                     </Button> */}
-                    <Form method="delete">
-                      <input type="hidden" name="scopeId" value={scope.id} />
-                      <Button
-                        type="submit"
-                        size="sm"
-                        variant="outline"
-                        className="h-8 gap-1"
-                      >
-                        <Trash className="h-3.5 w-3.5" />
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                          Delete
-                        </span>
-                      </Button>
-                    </Form>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                      <Form method="delete">
+                        <input type="hidden" name="scopeId" value={scope.id} />
+                        <Button
+                          type="submit"
+                          size="sm"
+                          variant="outline"
+                          className="h-8 gap-1"
+                        >
+                          <Trash className="h-3.5 w-3.5" />
+                          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                            Delete
+                          </span>
+                        </Button>
+                      </Form>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </Shell>
   );
 }

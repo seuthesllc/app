@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Verified } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const meta: MetaFunction = () => {
   return [
@@ -41,37 +42,48 @@ export default function Frameworks() {
           </a>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        {data.company?.frameworks.map((framework) => (
-          <Card key={framework.id}>
-            <CardHeader>
-              <CardTitle className="flex font-serif tracking-normal text-gray-700 dark:text-white">
-                <span>{framework.name}</span>
-                {framework.completion ? (
-                  <span className="ml-auto text-muted-foreground">
-                    {framework.completion}%
+      {data.company?.frameworks.length === 0 ? (
+        <Alert>
+          <AlertTitle className="text-2xl font-serif tracking-normal text-gray-700 dark:text-white">
+            No frameworks
+          </AlertTitle>
+          <AlertDescription className="text-muted-foreground">
+            You don&apos;t have any frameworks yet.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <div className="grid grid-cols-3 gap-4">
+          {data.company?.frameworks.map((framework) => (
+            <Card key={framework.id}>
+              <CardHeader>
+                <CardTitle className="flex font-serif tracking-normal text-gray-700 dark:text-white">
+                  <span>{framework.name}</span>
+                  {framework.completion ? (
+                    <span className="ml-auto text-muted-foreground">
+                      {framework.completion}%
+                    </span>
+                  ) : null}
+                </CardTitle>
+                {framework.managed ? (
+                  <span className="text-xs text-gold-500 font-medium">
+                    <Verified className="inline-block mr-0.5 -mt-[1px] w-4 h-4" />{" "}
+                    Managed by Seuthes
                   </span>
+                ) : (
+                  <span className="text-xs text-gray-500 font-medium">
+                    Self-managed
+                  </span>
+                )}
+              </CardHeader>
+              <CardContent>
+                {framework.completion ? (
+                  <Progress value={framework.completion} className="w-full" />
                 ) : null}
-              </CardTitle>
-              {framework.managed ? (
-                <span className="text-xs text-gold-500 font-medium">
-                  <Verified className="inline-block mr-0.5 -mt-[1px] w-4 h-4" />{" "}
-                  Managed by Seuthes
-                </span>
-              ) : (
-                <span className="text-xs text-gray-500 font-medium">
-                  Self-managed
-                </span>
-              )}
-            </CardHeader>
-            <CardContent>
-              {framework.completion ? (
-                <Progress value={framework.completion} className="w-full" />
-              ) : null}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </Shell>
   );
 }

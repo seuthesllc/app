@@ -38,7 +38,7 @@ model Membership {
 
 model Framework {
   id         String  @id @default(cuid())
-  name       String  @unique
+  name       String
   managed    Boolean @default(false)
   completion Int?
   company    Company @relation(fields: [companyId], references: [id])

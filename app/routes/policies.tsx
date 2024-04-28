@@ -15,7 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ExternalLink, PlusCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ExternalLink, PlusCircle, AlertCircle } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import dayjs from "dayjs";
 
@@ -59,79 +60,96 @@ export default function Policies() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (data.company?.vantaToken) {
+      fetchData();
+    }
+  }, [data.company?.vantaToken]);
 
   return (
     <Shell heading="Policies">
+      {!data.company?.vantaToken && (
+        <Alert
+          variant="destructive"
+          className="bg-white dark:text-red-400 dark:bg-red-100 dark:bg-opacity-10 mb-4"
+        >
+          <AlertCircle className="h-4 w-4 dark:text-red-400" />
+          <AlertTitle>You haven&apos;t set a Vanta token</AlertTitle>
+          <AlertDescription>
+            We can&apos;t display your Vanta data yet, because you haven&apos;t
+            added your Vanta API token.
+          </AlertDescription>
+        </Alert>
+      )}
       {policies.length === 0 ? (
         <Skeleton className="h-96 w-full" />
       ) : (
         <>
-        <div className="flex mb-2">
-        <div className="flex">
-          <span className="text-xs text-gray-400 mt-auto">
-            Showing {policies.length} available policies
-          </span>
-        </div>
-        <div className="ml-auto space-x-2">
-          <a
-            href="https://app.vanta.com/policies"
-            className={"gap-1 " + buttonVariants({ size: "sm" })}
-            style={{
-              height: "32px",
-            }}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              New policy
-            </span>
-          </a>
-        </div>
-      </div>
-        <Card>
-          <CardContent className="p-2">
-            <Table>
-              <TableHeader style={{ textAlign: "left" }}>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Approver</TableHead>
-                  <TableHead>Approval Date</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {policies.map((policy) => (
-                  <TableRow key={policy.uid}>
-                    <TableCell className="font-medium">
-                      {policy.displayName}
-                    </TableCell>
-                    <TableCell>{policy.approver.displayName}</TableCell>
-                    <TableCell>{dayjs(policy.approvedAt).format("MMMM DD, YYYY")}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Link
-                        to={policy.url}
-                        className={
-                          "gap-1 " +
-                          buttonVariants({ variant: "outline", size: "sm" })
-                        }
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                          View
-                        </span>
-                      </Link>
-                    </TableCell>
+          <div className="flex mb-2">
+            <div className="flex">
+              <span className="text-xs text-gray-400 mt-auto">
+                Showing {policies.length} available policies
+              </span>
+            </div>
+            <div className="ml-auto space-x-2">
+              <a
+                href="https://app.vanta.com/policies"
+                className={"gap-1 " + buttonVariants({ size: "sm" })}
+                style={{
+                  height: "32px",
+                }}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  New policy
+                </span>
+              </a>
+            </div>
+          </div>
+          <Card>
+            <CardContent className="p-2">
+              <Table>
+                <TableHeader style={{ textAlign: "left" }}>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Approver</TableHead>
+                    <TableHead>Approval Date</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
+                <TableBody>
+                  {policies.map((policy) => (
+                    <TableRow key={policy.uid}>
+                      <TableCell className="font-medium">
+                        {policy.displayName}
+                      </TableCell>
+                      <TableCell>{policy.approver.displayName}</TableCell>
+                      <TableCell>
+                        {dayjs(policy.approvedAt).format("MMMM DD, YYYY")}
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <Link
+                          to={policy.url}
+                          className={
+                            "gap-1 " +
+                            buttonVariants({ variant: "outline", size: "sm" })
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                            View
+                          </span>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </>
       )}
     </Shell>
