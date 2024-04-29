@@ -24,6 +24,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const name = body.get("name") || "";
   const pentestFrequency = body.get("pentestFrequency") || "";
   const accessReviewFrequency = body.get("accessReviewFrequency") || "";
+  const vantaToken = body.get("vantaToken") || "";
 
   const updates = await prisma.company.update({
     where: { id: companyId },
@@ -33,6 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
         pentest: parseInt(pentestFrequency),
         accessReview: parseInt(accessReviewFrequency),
       },
+      vantaToken: vantaToken,
     },
   });
 
@@ -53,14 +55,14 @@ export default function Settings() {
   return (
     <Shell heading="Settings">
       <Toaster position="bottom-right" />
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-gray-700 tracking-normal font-serif dark:text-white">
-            Company
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form method="patch" className="space-y-4">
+      <Form method="patch" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-gray-700 tracking-normal font-serif dark:text-white">
+              Company
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <input type="hidden" name="companyId" value={data.company?.id} />
             <div className="grid w-full max-w-sm items-center gap-2">
               <Label htmlFor="name">Company Name</Label>
@@ -71,6 +73,16 @@ export default function Settings() {
                 defaultValue={data.company?.name}
               />
             </div>
+            <Button type="submit">Update company</Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-gray-700 tracking-normal font-serif dark:text-white">
+              Frequencies
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="grid w-full max-w-sm items-center gap-2">
               <Label htmlFor="pentestFrequency">
                 Pentest Frequency (in months)
@@ -93,10 +105,29 @@ export default function Settings() {
                 defaultValue={data.company?.frequencies?.accessReview || 3}
               />
             </div>
-            <Button type="submit">Update company</Button>
-          </Form>
-        </CardContent>
-      </Card>
+            <Button type="submit">Update frequencies</Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-gray-700 tracking-normal font-serif dark:text-white">
+              Integrations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid w-full max-w-sm items-center gap-2">
+              <Label htmlFor="vantaToken">Vanta API Token</Label>
+              <Input
+                type="text"
+                id="vantaToken"
+                name="vantaToken"
+                defaultValue={data.company?.vantaToken || ""}
+              />
+            </div>
+            <Button type="submit">Update integrations</Button>
+          </CardContent>
+        </Card>
+      </Form>
     </Shell>
   );
 }
