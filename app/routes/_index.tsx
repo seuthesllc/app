@@ -57,12 +57,15 @@ export default function Index() {
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2 flex flex-col gap-4">
           {!data.company?.vantaToken && (
-            <Alert variant="destructive" className="bg-white dark:text-red-400 dark:bg-red-100 dark:bg-opacity-10">
+            <Alert
+              variant="destructive"
+              className="bg-white dark:text-red-400 dark:bg-red-100 dark:bg-opacity-10"
+            >
               <AlertCircle className="h-4 w-4 dark:text-red-400" />
               <AlertTitle>You haven&apos;t set a Vanta token</AlertTitle>
               <AlertDescription>
-                We can&apos;t display your Vanta data yet, because you haven&apos;t
-                added your Vanta API token.
+                We can&apos;t display your Vanta data yet, because you
+                haven&apos;t added your Vanta API token.
               </AlertDescription>
             </Alert>
           )}
@@ -116,32 +119,38 @@ export default function Index() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 pt-0">
-              <Table>
-                <TableHeader style={{ textAlign: "left" }}>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.pentests.map((pentest) => (
-                    <TableRow key={pentest.id}>
-                      <TableCell>
-                        <p className="font-medium">
-                          {pentest.scope.name} -{" "}
-                          {dayjs(pentest.date).format("MMMM YYYY")}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatPentestType(pentest.type)}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        {formatPentestStatus(pentest.status)}
-                      </TableCell>
+              {data.pentests.length === 0 ? (
+                <p className="text-muted-foreground text-sm mx-3 mb-2">
+                  No pentests yet
+                </p>
+              ) : (
+                <Table>
+                  <TableHeader style={{ textAlign: "left" }}>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {data.pentests.map((pentest) => (
+                      <TableRow key={pentest.id}>
+                        <TableCell>
+                          <p className="font-medium">
+                            {pentest.scope.name} -{" "}
+                            {dayjs(pentest.date).format("MMMM YYYY")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatPentestType(pentest.type)}
+                          </p>
+                        </TableCell>
+                        <TableCell>
+                          {formatPentestStatus(pentest.status)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -151,24 +160,30 @@ export default function Index() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 pt-0">
-              <Table>
-                <TableHeader style={{ textAlign: "left" }}>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Scope</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.scopes.map((scope) => (
-                    <TableRow key={scope.id}>
-                      <TableCell className="font-medium">
-                        {scope.name}
-                      </TableCell>
-                      <TableCell>{scope.scope}</TableCell>
+              {data.scopes.length === 0 ? (
+                <p className="text-muted-foreground text-sm mx-3 mb-2">
+                  No scopes yet
+                </p>
+              ) : (
+                <Table>
+                  <TableHeader style={{ textAlign: "left" }}>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Scope</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {data.scopes.map((scope) => (
+                      <TableRow key={scope.id}>
+                        <TableCell className="font-medium">
+                          {scope.name}
+                        </TableCell>
+                        <TableCell>{scope.scope}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </div>
