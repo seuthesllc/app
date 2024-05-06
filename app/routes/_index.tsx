@@ -19,6 +19,9 @@ import { Progress } from "@/components/ui/progress";
 import { AlertCircle, Verified } from "lucide-react";
 import { formatPentestType } from "@/lib/enums";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 export const meta: MetaFunction = () => {
   return [
@@ -112,6 +115,33 @@ export default function Index() {
         </div>
 
         <div className="space-y-4">
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="font-serif tracking-normal text-gray-700 dark:text-white">
+                Upcoming tasks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <Table>
+                <TableHeader style={{ textAlign: "left" }}>
+                  <TableRow>
+                    <TableHead>Task</TableHead>
+                    <TableHead>Due in</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">Penetration Testing</TableCell>
+                    <TableCell>
+                      {data.pentests[0]?.date ? dayjs(data.pentests[0].date)
+                        .add(data.company?.frequencies.pentest, "months")
+                        .fromNow() : "N/A"}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="font-serif tracking-normal text-gray-700 dark:text-white">
