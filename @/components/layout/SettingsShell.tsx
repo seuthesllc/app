@@ -9,6 +9,10 @@ const settingsNavigation = [
     label: "Company",
     href: "/settings/company",
   },
+  {
+    label: "Team",
+    href: "/settings/team",
+  },
 ];
 
 export default function SettingsShell({
