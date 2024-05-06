@@ -22,6 +22,7 @@ const navigation = [
   { name: "Pentests", href: "/pentests" },
   { name: "Scopes", href: "/scopes" },
   { name: "Policies", href: "/policies" },
+  { name: "Access Reviews", href: "/accessreviews" },
   { name: "Settings", href: "/settings" },
 ];
 

@@ -138,6 +138,16 @@ export default function Index() {
                         .fromNow() : "N/A"}
                     </TableCell>
                   </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Access Reviews</TableCell>
+                    <TableCell>
+                      {data.accessReviews[0]?.date
+                        ? dayjs(data.accessReviews[0].date)
+                          .add(data.company?.frequencies.accessReview, "months")
+                          .fromNow()
+                        : "N/A"}
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </CardContent>
@@ -265,5 +275,15 @@ export async function loader({ request }) {
     },
   });
 
-  return json({ user, company, pentests, scopes });
+  const accessReviews = await prisma.accessReview.findMany({
+    where: {
+      companyId: firstMembership.companyId,
+    },
+    select: {
+      id: true,
+      date: true,
+    },
+  });
+
+  return json({ user, company, pentests, scopes, accessReviews });
 }

@@ -25,6 +25,7 @@ model Company {
   pentests    Pentest[]
   memberships Membership[]
   scopes      Scope[]
+  accessReviews AccessReview[]
 }
 
 model Membership {
@@ -77,4 +78,12 @@ model Scope {
   company   Company   @relation(fields: [companyId], references: [id])
   companyId String
   pentests  Pentest[]
+}
+
+model AccessReview {
+  id        String    @id @default(cuid())
+  date      DateTime  @default(now())
+  url       String?
+  company   Company   @relation(fields: [companyId], references: [id])
+  companyId String
 }
