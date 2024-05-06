@@ -25,6 +25,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const name = body.get("name") || "";
   const pentestFrequency = body.get("pentestFrequency") || "";
   const accessReviewFrequency = body.get("accessReviewFrequency") || "";
+  const controlSelfAssessmentFrequency = body.get("controlSelfAssessmentFrequency") || "";
   const vantaToken = body.get("vantaToken") || "";
 
   const updates = await prisma.company.update({
@@ -34,6 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
       frequencies: {
         pentest: parseInt(pentestFrequency),
         accessReview: parseInt(accessReviewFrequency),
+        controlSelfAssessment: parseInt(controlSelfAssessmentFrequency),
       },
       vantaToken: vantaToken,
     },
@@ -105,6 +107,17 @@ export default function Settings() {
                   id="accessReviewFrequency"
                   name="accessReviewFrequency"
                   defaultValue={data.company?.frequencies?.accessReview || 3}
+                />
+              </div>
+              <div className="grid w-full max-w-sm items-center gap-2">
+                <Label htmlFor="controlSelfAssessmentFrequency">
+                  Control Self Assessment Frequency (in months)
+                </Label>
+                <Input
+                  type="number"
+                  id="controlSelfAssessmentFrequency"
+                  name="controlSelfAssessmentFrequency"
+                  defaultValue={data.company?.frequencies?.controlSelfAssessment || 1}
                 />
               </div>
               <Button type="submit">Update frequencies</Button>

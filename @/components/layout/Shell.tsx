@@ -23,6 +23,7 @@ const navigation = [
   { name: "Scopes", href: "/scopes" },
   { name: "Policies", href: "/policies" },
   { name: "Access Reviews", href: "/accessreviews" },
+  { name: "CSAs", href: "/csa" },
   { name: "Settings", href: "/settings" },
 ];
 

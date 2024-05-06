@@ -139,11 +139,21 @@ export default function Index() {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">Access Reviews</TableCell>
+                    <TableCell className="font-medium">Access Review</TableCell>
                     <TableCell>
                       {data.accessReviews[0]?.date
                         ? dayjs(data.accessReviews[0].date)
                           .add(data.company?.frequencies.accessReview, "months")
+                          .fromNow()
+                        : "N/A"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Control Self Assessment</TableCell>
+                    <TableCell>
+                      {data.controlSelfAssessments[0]?.date
+                        ? dayjs(data.controlSelfAssessments[0].date)
+                          .add(data.company?.frequencies.controlSelfAssessment, "months")
                           .fromNow()
                         : "N/A"}
                     </TableCell>
@@ -285,5 +295,15 @@ export async function loader({ request }) {
     },
   });
 
-  return json({ user, company, pentests, scopes, accessReviews });
+  const controlSelfAssessments = await prisma.controlSelfAssessment.findMany({
+    where: {
+      companyId: firstMembership.companyId,
+    },
+    select: {
+      id: true,
+      date: true,
+    },
+  });
+
+  return json({ user, company, pentests, scopes, accessReviews, controlSelfAssessments });
 }
