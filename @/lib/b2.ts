@@ -21,7 +21,7 @@ export async function uploadFileToB2(bucket: string, file: File, subfolder: stri
     data: data, // File data for upload
   });
 
-  return response.data.fileId; // Return the URL of the uploaded file
+  return { fileId: response.data.fileId, fileName: response.data.fileName }; // Return the file ID and file name from the response
 }
 
 export async function getFileFromB2(fileId: string): Promise<string> {
@@ -40,4 +40,24 @@ export async function getFileFromB2(fileId: string): Promise<string> {
   // Convert arraybuffer to base64
   const base64data = Buffer.from(response.data).toString('base64');
   return base64data;
+}
+
+export async function deleteFileFromB2(fileId: string, fileName: string): Promise<boolean> {
+  const b2 = new B2({
+    accountId: process.env.B2_ACCOUNT_ID as string, // Ensuring accountId is not undefined
+    applicationKey: process.env.B2_APPLICATION_KEY as string, // Ensuring applicationKey is not undefined
+  });
+
+  await b2.authorize(); // Authorize with B2
+
+  try {
+    await b2.deleteFileVersion({
+      fileId: fileId,
+      fileName: fileName
+    });
+    return true; // Return true if deletion is successful
+  } catch (error) {
+    console.error('Failed to delete file:', error);
+    return false; // Return false if deletion fails
+  }
 }

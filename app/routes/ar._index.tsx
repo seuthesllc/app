@@ -34,7 +34,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import dayjs from "dayjs";
-import { uploadFileToB2 } from "@/lib/b2";
+import { uploadFileToB2, deleteFileFromB2 } from "@/lib/b2";
 
 export const meta: MetaFunction = () => {
   return [
@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     // TODO: Verify the user is a member of the company
 
-    const b2Url = await uploadFileToB2(bucket, file, "ar");
+    const upload = await uploadFileToB2(bucket, file, "ar");
 
     // Create the new access review
     await prisma.accessReview.create({
@@ -65,7 +65,8 @@ export async function action({ request }: ActionFunctionArgs) {
             id: companyId,
           },
         },
-        fileId: b2Url,
+        fileId: upload.fileId,
+        fileName: upload.fileName,
         date: date,
       },
     });
@@ -75,6 +76,20 @@ export async function action({ request }: ActionFunctionArgs) {
   } else if (method === "DELETE") {
     const body = new URLSearchParams(await request.text());
     const accessReviewId = body.get("accessReviewId") || "";
+
+    // Lookup the fileId from the control self assessment
+    const accessReview = await prisma.accessReview.findFirst({
+      where: {
+        id: accessReviewId,
+      },
+      select: {
+        fileId: true,
+        fileName: true,
+      },
+    });
+
+    // Delete the file from B2
+    await deleteFileFromB2(accessReview?.fileId, accessReview?.fileName);
 
     // Delete the access review
     await prisma.accessReview.delete({

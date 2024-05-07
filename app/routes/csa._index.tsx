@@ -33,7 +33,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { uploadFileToB2 } from "@/lib/b2";
+import { deleteFileFromB2, uploadFileToB2 } from "@/lib/b2";
 import dayjs from "dayjs";
 
 export const meta: MetaFunction = () => {
@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     // TODO: Verify the user is a member of the company
 
-    const b2Url = await uploadFileToB2(bucket, file, "csa");
+    const upload = await uploadFileToB2(bucket, file, "csa");
 
     // Create the new access review
     await prisma.controlSelfAssessment.create({
@@ -65,7 +65,8 @@ export async function action({ request }: ActionFunctionArgs) {
             id: companyId,
           },
         },
-        fileId: b2Url,
+        fileId: upload.fileId,
+        fileName: upload.fileName,
         date: date,
       },
     });
@@ -75,6 +76,20 @@ export async function action({ request }: ActionFunctionArgs) {
   } else if (method === "DELETE") {
     const body = new URLSearchParams(await request.text());
     const controlSelfAssessmentId = body.get("controlSelfAssessmentId") || "";
+
+    // Lookup the fileId from the control self assessment
+    const controlSelfAssessment = await prisma.controlSelfAssessment.findFirst({
+      where: {
+        id: controlSelfAssessmentId,
+      },
+      select: {
+        fileId: true,
+        fileName: true,
+      },
+    });
+
+    // Delete the file from B2
+    await deleteFileFromB2(controlSelfAssessment?.fileId, controlSelfAssessment?.fileName);
 
     // Delete the control self assessment
     await prisma.controlSelfAssessment.delete({

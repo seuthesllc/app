@@ -85,6 +85,7 @@ model Scope {
 model AccessReview {
   id        String    @id @default(cuid())
   date      DateTime  @default(now())
+  fileName  String?
   fileId    String?
   company   Company   @relation(fields: [companyId], references: [id])
   companyId String
@@ -93,6 +94,7 @@ model AccessReview {
 model ControlSelfAssessment {
   id        String    @id @default(cuid())
   date      DateTime  @default(now())
+  fileName  String?
   fileId    String?
   company   Company   @relation(fields: [companyId], references: [id])
   companyId String
