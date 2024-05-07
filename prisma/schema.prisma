@@ -21,6 +21,7 @@ model Company {
   name        String
   frequencies Json? @default("{\"pentest\": 12, \"accessReview\": 3, \"controlSelfAssessment\": 1}")
   vantaToken  String?
+  bucket      String?
   frameworks  Framework[]
   pentests    Pentest[]
   memberships Membership[]
@@ -92,7 +93,7 @@ model AccessReview {
 model ControlSelfAssessment {
   id        String    @id @default(cuid())
   date      DateTime  @default(now())
-  url       String?
+  fileId    String?
   company   Company   @relation(fields: [companyId], references: [id])
   companyId String
 }
