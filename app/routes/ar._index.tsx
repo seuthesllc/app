@@ -8,7 +8,7 @@ import { authenticator } from "@/lib/auth.server";
 import { Form, useLoaderData } from "@remix-run/react";
 import Shell from "@/components/layout/Shell";
 import prisma from "@/lib/prisma";
-import { PlusCircle, Trash } from "lucide-react";
+import { ExternalLink, PlusCircle, Trash } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,6 +33,8 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import dayjs from "dayjs";
+import { uploadFileToB2 } from "@/lib/b2";
 
 export const meta: MetaFunction = () => {
   return [
@@ -45,12 +47,15 @@ export async function action({ request }: ActionFunctionArgs) {
   const method = request.method;
 
   if (method === "POST") {
-    const body = new URLSearchParams(await request.text());
+    const body = await request.formData();
     const companyId = body.get("companyId") || "";
-    const url = body.get("url") || "";
+    const bucket = body.get("bucket") || "";
     const date = body.get("date") || "";
+    const file = body.get("file") as File;
 
     // TODO: Verify the user is a member of the company
+
+    const b2Url = await uploadFileToB2(bucket, file, "ar");
 
     // Create the new access review
     await prisma.accessReview.create({
@@ -60,13 +65,13 @@ export async function action({ request }: ActionFunctionArgs) {
             id: companyId,
           },
         },
-        url: url,
+        fileId: b2Url,
         date: date,
       },
     });
 
     // Redirect the user to the access reviews page
-    return redirect(`/accessreviews`);
+    return redirect(`/ar`);
   } else if (method === "DELETE") {
     const body = new URLSearchParams(await request.text());
     const accessReviewId = body.get("accessReviewId") || "";
@@ -78,7 +83,7 @@ export async function action({ request }: ActionFunctionArgs) {
       },
     });
 
-    return redirect(`/accessreviews`);
+    return redirect(`/ar`);
   }
 }
 
@@ -111,11 +116,16 @@ export default function AccessReviews() {
                   Record a new access review for your company.
                 </SheetDescription>
               </SheetHeader>
-              <Form method="post" className="mt-6 space-y-8">
+              <Form method="post" className="mt-6 space-y-8" encType="multipart/form-data">
                 <input
                   type="hidden"
                   name="companyId"
-                  value={data.company?.companyId}
+                  value={data.membership?.companyId}
+                />
+                <input
+                  type="hidden"
+                  name="bucket"
+                  value={data.membership?.company?.bucket || ""}
                 />
                 <div className="grid w-full max-w-sm items-center gap-2">
                   <Label htmlFor="date">Date</Label>
@@ -128,13 +138,8 @@ export default function AccessReviews() {
                   />
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-2">
-                  <Label htmlFor="url">URL</Label>
-                  <Input
-                    type="text"
-                    id="url"
-                    name="url"
-                    placeholder="https://drive.google.com"
-                  />
+                  <Label htmlFor="file">File</Label>
+                  <Input type="file" id="file" name="file" />
                 </div>
                 <SheetFooter className="absolute bottom-0 right-0 flex justify-end p-4">
                   <SheetClose>
@@ -171,24 +176,36 @@ export default function AccessReviews() {
               <TableHeader style={{ textAlign: "left" }}>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead>URL</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.accessReviews.map((accessReview) => (
                   <TableRow key={accessReview.id}>
-                    <TableCell className="font-medium">{accessReview.date}</TableCell>
-                    <TableCell>{accessReview.url}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      {/* <Button size="sm" variant="outline" className="h-8 gap-1">
-                      <Pencil className="h-3.5 w-3.5" />
-                      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                        Edit
-                      </span>
-                    </Button> */}
+                    <TableCell className="font-medium">
+                      {dayjs(accessReview.date).format("MMMM YYYY")}
+                    </TableCell>
+                    <TableCell className="flex text-right space-x-2">
+                      <Button
+                        onClick={() =>
+                          (window.location.href =
+                            "/ar/" + accessReview.id)
+                        }
+                        size="sm"
+                        variant="outline"
+                        className="h-8 gap-1 ml-auto"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                          View
+                        </span>
+                      </Button>
                       <Form method="delete">
-                        <input type="hidden" name="accessReviewId" value={accessReview.id} />
+                        <input
+                          type="hidden"
+                          name="accessReviewId"
+                          value={accessReview.id}
+                        />
                         <Button
                           type="submit"
                           size="sm"
@@ -218,17 +235,25 @@ export async function loader({ request }) {
     failureRedirect: "/auth/login",
   });
 
-  const company = await prisma.membership.findFirst({
+  const membership = await prisma.membership.findFirst({
     where: {
       userId: user.id,
+    },
+    include: {
+      company: {
+        select: {
+          id: true,
+          bucket: true,
+        },
+      },
     },
   });
 
   const accessReviews = await prisma.accessReview.findMany({
     where: {
-      companyId: company?.companyId,
+      companyId: membership?.companyId,
     },
   });
 
-  return json({ company, accessReviews });
+  return json({ membership, accessReviews });
 }

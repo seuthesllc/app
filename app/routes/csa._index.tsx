@@ -65,7 +65,7 @@ export async function action({ request }: ActionFunctionArgs) {
             id: companyId,
           },
         },
-        url: b2Url,
+        fileId: b2Url,
         date: date,
       },
     });

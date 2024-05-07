@@ -22,7 +22,7 @@ const navigation = [
   { name: "Pentests", href: "/pentests" },
   { name: "Scopes", href: "/scopes" },
   { name: "Policies", href: "/policies" },
-  { name: "Access Reviews", href: "/accessreviews" },
+  { name: "Access Reviews", href: "/ar" },
   { name: "CSAs", href: "/csa" },
   { name: "Settings", href: "/settings" },
 ];

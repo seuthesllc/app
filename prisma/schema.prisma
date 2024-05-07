@@ -85,7 +85,7 @@ model Scope {
 model AccessReview {
   id        String    @id @default(cuid())
   date      DateTime  @default(now())
-  url       String?
+  fileId    String?
   company   Company   @relation(fields: [companyId], references: [id])
   companyId String
 }
