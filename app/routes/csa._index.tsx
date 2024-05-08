@@ -5,10 +5,10 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { authenticator } from "@/lib/auth.server";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import Shell from "@/components/layout/Shell";
 import prisma from "@/lib/prisma";
-import { ExternalLink, PlusCircle, Trash } from "lucide-react";
+import { ExternalLink, PlusCircle, Trash, Loader2 } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,7 +58,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const upload = await uploadFileToB2(bucket, file, "csa");
 
     // Create the new access review
-    await prisma.controlSelfAssessment.create({
+    const controlSelfAssessment = await prisma.controlSelfAssessment.create({
       data: {
         company: {
           connect: {
@@ -71,8 +71,8 @@ export async function action({ request }: ActionFunctionArgs) {
       },
     });
 
-    // Redirect the user to the control self assessments page
-    return redirect(`/csa`);
+    // Redirect the user to the control self assessment
+    return redirect(`/csa/${controlSelfAssessment.id}`);
   } else if (method === "DELETE") {
     const body = new URLSearchParams(await request.text());
     const controlSelfAssessmentId = body.get("controlSelfAssessmentId") || "";
@@ -89,7 +89,10 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     // Delete the file from B2
-    await deleteFileFromB2(controlSelfAssessment?.fileId, controlSelfAssessment?.fileName);
+    await deleteFileFromB2(
+      controlSelfAssessment?.fileId,
+      controlSelfAssessment?.fileName
+    );
 
     // Delete the control self assessment
     await prisma.controlSelfAssessment.delete({
@@ -104,6 +107,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ControlSelfAssessments() {
   const data = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.formAction === "/csa?index";
   return (
     <Shell heading="Control Self Assessments">
       <div className="flex mb-2">
@@ -167,12 +172,21 @@ export default function ControlSelfAssessments() {
                       Cancel
                     </Button>
                   </SheetClose>
-                  <Button size="sm" className="h-8 gap-1" type="submit">
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                      Create
-                    </span>
-                  </Button>
+                  {isSubmitting ? (
+                    <Button size="sm" className="h-8 gap-1" disabled>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Please wait
+                      </span>
+                    </Button>
+                  ) : (
+                    <Button size="sm" className="h-8 gap-1" type="submit">
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Create
+                      </span>
+                    </Button>
+                  )}
                 </SheetFooter>
               </Form>
             </SheetContent>
@@ -206,7 +220,15 @@ export default function ControlSelfAssessments() {
                       {dayjs(controlSelfAssessment.date).format("MMMM YYYY")}
                     </TableCell>
                     <TableCell className="flex text-right space-x-2">
-                      <Button onClick={() => window.location.href = "/csa/" + controlSelfAssessment.id} size="sm" variant="outline" className="h-8 gap-1 ml-auto">
+                      <Button
+                        onClick={() =>
+                          (window.location.href =
+                            "/csa/" + controlSelfAssessment.id)
+                        }
+                        size="sm"
+                        variant="outline"
+                        className="h-8 gap-1 ml-auto"
+                      >
                         <ExternalLink className="h-3.5 w-3.5" />
                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                           View

@@ -5,10 +5,10 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { authenticator } from "@/lib/auth.server";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import Shell from "@/components/layout/Shell";
 import prisma from "@/lib/prisma";
-import { ExternalLink, PlusCircle, Trash } from "lucide-react";
+import { ExternalLink, PlusCircle, Trash, Loader2 } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,7 +58,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const upload = await uploadFileToB2(bucket, file, "ar");
 
     // Create the new access review
-    await prisma.accessReview.create({
+    const accessReview = await prisma.accessReview.create({
       data: {
         company: {
           connect: {
@@ -72,7 +72,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     // Redirect the user to the access reviews page
-    return redirect(`/ar`);
+    return redirect(`/ar/${accessReview.id}`);
   } else if (method === "DELETE") {
     const body = new URLSearchParams(await request.text());
     const accessReviewId = body.get("accessReviewId") || "";
@@ -104,6 +104,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function AccessReviews() {
   const data = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.formAction === "/ar?index";
   return (
     <Shell heading="Access Reviews">
       <div className="flex mb-2">
@@ -162,12 +164,19 @@ export default function AccessReviews() {
                       Cancel
                     </Button>
                   </SheetClose>
-                  <Button size="sm" className="h-8 gap-1" type="submit">
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                      Create
-                    </span>
-                  </Button>
+                  {isSubmitting ? (
+                    <Button size="sm" className="h-8 gap-1" disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </Button>
+                  ) : (
+                    <Button size="sm" className="h-8 gap-1" type="submit">
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Create
+                      </span>
+                    </Button>
+                  )}
                 </SheetFooter>
               </Form>
             </SheetContent>
