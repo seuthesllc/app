@@ -266,6 +266,9 @@ export async function loader({ request }) {
         },
       },
     },
+    orderBy: {
+      date: "desc",
+    },
   });
 
   const scopes = await prisma.scope.findMany({
@@ -293,6 +296,9 @@ export async function loader({ request }) {
       id: true,
       date: true,
     },
+    orderBy: {
+      date: "desc",
+    },
   });
 
   const controlSelfAssessments = await prisma.controlSelfAssessment.findMany({
@@ -302,6 +308,9 @@ export async function loader({ request }) {
     select: {
       id: true,
       date: true,
+    },
+    orderBy: {
+      date: "desc",
     },
   });
 

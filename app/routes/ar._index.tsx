@@ -277,6 +277,9 @@ export async function loader({ request }) {
     where: {
       companyId: membership?.companyId,
     },
+    orderBy: {
+      date: "desc",
+    },
   });
 
   return json({ membership, accessReviews });
